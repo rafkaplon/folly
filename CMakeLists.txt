@@ -101,15 +101,15 @@ auto_sources(hfiles "*.h" "RECURSE" "${FOLLY_DIR}")
 # No need for tests or benchmarks, and we can't build most experimental stuff.
 REMOVE_MATCHES_FROM_LISTS(files hfiles
   MATCHES
-    "/build/"
-    "/experimental/exception_tracer/"
-    "/experimental/hazptr/bench/"
-    "/experimental/hazptr/example/"
-    "/experimental/logging/example/"
-    "/experimental/symbolizer/"
-    "/futures/exercises/"
-    "/test/"
-    "/tools/"
+    "^${FOLLY_DIR}/build/"
+    "^${FOLLY_DIR}/experimental/exception_tracer/"
+    "^${FOLLY_DIR}/experimental/hazptr/bench/"
+    "^${FOLLY_DIR}/experimental/hazptr/example/"
+    "^${FOLLY_DIR}/experimental/logging/example/"
+    "^${FOLLY_DIR}/experimental/symbolizer/"
+    "^${FOLLY_DIR}/futures/exercises/"
+    "^${FOLLY_DIR}/(.*/)?test/"
+    "^${FOLLY_DIR}/tools/"
     "Benchmark.cpp$"
     "Test.cpp$"
   IGNORE_MATCHES
