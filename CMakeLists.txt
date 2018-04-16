@@ -322,7 +322,6 @@ install(
   EXPORT folly
   DESTINATION lib/cmake/folly
   NAMESPACE Folly::
-  FILE folly-targets.cmake
 )
 
 # We need a wrapper config file to do the find_package calls to ensure
