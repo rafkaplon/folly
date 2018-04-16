@@ -324,6 +324,29 @@ install(
   NAMESPACE Folly::
 )
 
+if(HUNTER_ENABLED)
+  set_target_properties(folly_base PROPERTIES EXPORT_NAME folly)
+
+  set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+  set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
+
+  set(TARGETS_EXPORT_NAME folly)
+
+  include(CMakePackageConfigHelpers)
+
+  # Use:
+  # * TARGETS_EXPORT_NAME
+  # * PROJECT_NAME
+  configure_package_config_file(
+      "CMake/template/Config.cmake.in"
+      "${project_config}"
+      INSTALL_DESTINATION "${config_install_dir}"
+  )
+
+  install(FILES ${project_config} DESTINATION ${config_install_dir})
+else()
+
 # We need a wrapper config file to do the find_package calls to ensure
 # that all our dependencies are available to link against.
 file(
@@ -332,6 +355,8 @@ file(
 )
 file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/folly-deps.cmake "\ninclude(folly-targets.cmake)\n")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/folly-deps.cmake DESTINATION share/folly RENAME folly-config.cmake)
+
+endif()
 
 option(BUILD_TESTS "If enabled, compile the tests." OFF)
 option(BUILD_BROKEN_TESTS "If enabled, compile tests that are known to be broken." OFF)
