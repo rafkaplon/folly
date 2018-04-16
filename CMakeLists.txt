@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.4.0 FATAL_ERROR)
 
+include("CMake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.20.41.tar.gz"
+    SHA1 "e8e77b69fc2ca66808091e781cc06bcb02724443"
+)
+
 # includes
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
