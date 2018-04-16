@@ -22,6 +22,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 project(${PACKAGE_NAME})
 
+option(FOLLY_BUILD_FINGERPRINT "Build Fingerprint library" OFF)
+
 if(FALSE)
 
 if (MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
@@ -252,6 +254,9 @@ endif()
 
 endif()
 
+### NO INDENTATION TO SIMPLIFY CHERRY-PICKING
+if(FOLLY_BUILD_FINGERPRINT)
+
 # Now to generate the fingerprint tables
 add_executable(GenerateFingerprintTables
   ${FOLLY_DIR}/build/GenerateFingerprintTables.cpp
@@ -295,6 +300,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp
 add_library(folly ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp $<TARGET_OBJECTS:folly_base>)
 apply_folly_compile_options_to_target(folly)
 source_group("" FILES ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp)
+
+endif(FOLLY_BUILD_FINGERPRINT)
 
 target_link_libraries(folly PUBLIC ${FOLLY_LINK_LIBRARIES})
 target_include_directories(folly PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
