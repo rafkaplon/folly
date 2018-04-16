@@ -163,6 +163,21 @@ source_group("folly\\build" FILES
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
 
+target_compile_definitions(
+    folly_base
+    PUBLIC
+    FOLLY_HAVE_CLOCK_GETTIME=1
+    FOLLY_HAVE_BITS_FUNCTEXCEPT_H=1
+)
+
+if(APPLE)
+  target_compile_definitions(
+      folly_base
+      PUBLIC
+      FOLLY_USE_LIBCPP=1
+  )
+endif()
+
 set(FOLLY_SHINY_DEPENDENCIES
   Boost::chrono
   Boost::context
