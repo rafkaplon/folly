@@ -70,7 +70,14 @@ add_custom_command(
   COMMENT "Generating the group varint tables..." VERBATIM
 )
 
+if(HUNTER_ENABLED)
+  include(folly-deps-hunter)
+else()
+
 include(folly-deps) # Find the required packages
+
+endif()
+
 if (LIBPTHREAD_FOUND)
   set(FOLLY_HAVE_PTHREAD ON)
 endif()
