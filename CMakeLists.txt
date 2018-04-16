@@ -20,7 +20,7 @@ set(PACKAGE_BUGREPORT "https://github.com/facebook/folly/issues")
 # 150+ tests in the root folder anyone? No? I didn't think so.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-project(${PACKAGE_NAME} CXX)
+project(${PACKAGE_NAME})
 
 if (MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
   set(MSVC_IS_2017 ON)
