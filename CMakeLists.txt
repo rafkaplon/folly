@@ -78,7 +78,7 @@ include(folly-deps) # Find the required packages
 
 endif()
 
-if (LIBPTHREAD_FOUND)
+if (LIBPTHREAD_FOUND OR HUNTER_ENABLED)
   set(FOLLY_HAVE_PTHREAD ON)
 endif()
 configure_file(
