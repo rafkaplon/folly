@@ -140,6 +140,10 @@ list(REMOVE_ITEM hfiles
   ${FOLLY_DIR}/poly/Regular.h
 )
 
+list(REMOVE_ITEM files
+  ${FOLLY_DIR}/memory/MallctlHelper.cpp
+)
+
 add_library(folly_base OBJECT
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
