@@ -188,6 +188,7 @@ set(FOLLY_SHINY_DEPENDENCIES
   Boost::system
   OpenSSL::SSL
   OpenSSL::Crypto
+  Threads::Threads
 )
 
 set(FOLLY_LINK_LIBRARIES
