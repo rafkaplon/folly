@@ -153,7 +153,7 @@ add_library(folly_base
 )
 auto_source_group(folly ${FOLLY_DIR} ${files} ${hfiles})
 apply_folly_compile_options_to_target(folly_base)
-target_include_directories(folly_base PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(folly_base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 # Add the generated files to the correct source group.
 source_group("folly" FILES ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h)
 source_group("folly\\build" FILES
