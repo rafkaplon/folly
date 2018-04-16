@@ -320,7 +320,7 @@ auto_install_files(folly ${FOLLY_DIR}
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h DESTINATION include/folly)
 install(
   EXPORT folly
-  DESTINATION share/folly
+  DESTINATION lib/cmake/folly
   NAMESPACE Folly::
   FILE folly-targets.cmake
 )
