@@ -144,7 +144,7 @@ list(REMOVE_ITEM files
   ${FOLLY_DIR}/memory/MallctlHelper.cpp
 )
 
-add_library(folly_base OBJECT
+add_library(folly_base
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/EscapeTables.cpp
