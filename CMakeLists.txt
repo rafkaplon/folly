@@ -86,7 +86,12 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
 )
 
+if(NOT HUNTER_ENABLED)
+
 include(FollyCompiler)
+
+endif()
+
 include(FollyFunctions)
 
 # Main folly library files
