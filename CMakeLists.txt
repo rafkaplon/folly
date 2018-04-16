@@ -303,10 +303,10 @@ source_group("" FILES ${CMAKE_CURRENT_BINARY_DIR}/folly_dep.cpp)
 
 endif(FOLLY_BUILD_FINGERPRINT)
 
-target_link_libraries(folly PUBLIC ${FOLLY_LINK_LIBRARIES})
-target_include_directories(folly PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+target_link_libraries(folly_base PUBLIC ${FOLLY_LINK_LIBRARIES})
+target_include_directories(folly_base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
-install(TARGETS folly
+install(TARGETS folly_base
   EXPORT folly
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
