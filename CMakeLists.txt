@@ -22,6 +22,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 project(${PACKAGE_NAME})
 
+if(FALSE)
+
 if (MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
   set(MSVC_IS_2017 ON)
 elseif (MSVC_VERSION EQUAL 1900)
@@ -38,6 +40,7 @@ if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   message(FATAL_ERROR "The CMake build should only be used on Windows. For every other platform, use the makefile.")
 endif()
 
+endif()
 set(FOLLY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/folly")
 
 # Generate a few tables and create the main config file.
