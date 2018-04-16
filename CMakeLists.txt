@@ -220,11 +220,14 @@ else()
   set(FOLLY_INCLUDE_DIRECTORIES ${FOLLY_INCLUDE_DIRECTORIES} ${LIBEVENT_INCLUDE_DIR})
 endif()
 
+set(win_libs "")
+if(WIN32)
+  set(win_libs Iphlpapi.lib Ws2_32.lib)
+endif()
 
 set(FOLLY_LINK_LIBRARIES
   ${FOLLY_LINK_LIBRARIES}
-  Iphlpapi.lib
-  Ws2_32.lib
+  ${win_libs}
 
   ${FOLLY_SHINY_DEPENDENCIES}
 )
