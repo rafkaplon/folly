@@ -238,6 +238,8 @@ target_include_directories(folly_base
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+if(NOT HUNTER_ENABLED)
+
 foreach (LIB ${FOLLY_SHINY_DEPENDENCIES})
   target_include_directories(folly_base PUBLIC $<TARGET_PROPERTY:${LIB},INCLUDE_DIRECTORIES>)
   target_compile_definitions(folly_base PUBLIC $<TARGET_PROPERTY:${LIB},INTERFACE_COMPILE_DEFINITIONS>)
@@ -246,6 +248,8 @@ endforeach()
 if (FOLLY_HAVE_PTHREAD)
   target_include_directories(folly_base PUBLIC ${LIBPTHREAD_INCLUDE_DIRS})
   list(APPEND FOLLY_LINK_LIBRARIES ${LIBPTHREAD_LIBRARIES})
+endif()
+
 endif()
 
 # Now to generate the fingerprint tables
