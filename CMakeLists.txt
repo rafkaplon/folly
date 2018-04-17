@@ -80,7 +80,13 @@ include(folly-deps) # Find the required packages
 
 endif()
 
-if (LIBPTHREAD_FOUND OR HUNTER_ENABLED)
+if(MSVC OR APPLE)
+  set(FOLLY_HAVE_MEMRCHR FALSE)
+else()
+  set(FOLLY_HAVE_MEMRCHR TRUE)
+endif()
+
+if (LIBPTHREAD_FOUND OR (HUNTER_ENABLED AND NOT MSVC))
   set(FOLLY_HAVE_PTHREAD ON)
 endif()
 configure_file(
@@ -165,11 +171,13 @@ source_group("folly\\build" FILES
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
 
-target_compile_definitions(
-    folly_base
-    PUBLIC
-    FOLLY_HAVE_CLOCK_GETTIME=1
-)
+if(NOT MSVC)
+  target_compile_definitions(
+      folly_base
+      PUBLIC
+      FOLLY_HAVE_CLOCK_GETTIME=1
+  )
+endif()
 
 if(NOT MSVC AND NOT APPLE AND NOT ANDROID)
   target_compile_definitions(
