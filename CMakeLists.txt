@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.4.0 FATAL_ERROR)
 
 include("CMake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.20.41.tar.gz"
-    SHA1 "e8e77b69fc2ca66808091e781cc06bcb02724443"
+    URL "https://github.com/ruslo/hunter/archive/v0.20.44.tar.gz"
+    SHA1 "5a51c5fa3e2be7d1241d2b6405e197b9fe72333c"
 )
 
 # includes
