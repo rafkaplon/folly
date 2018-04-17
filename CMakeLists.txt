@@ -169,8 +169,15 @@ target_compile_definitions(
     folly_base
     PUBLIC
     FOLLY_HAVE_CLOCK_GETTIME=1
-    FOLLY_HAVE_BITS_FUNCTEXCEPT_H=1
 )
+
+if(NOT MSVC AND NOT APPLE)
+  target_compile_definitions(
+      folly_base
+      PUBLIC
+      FOLLY_HAVE_BITS_FUNCTEXCEPT_H=1
+  )
+endif()
 
 if(APPLE)
   target_compile_definitions(
