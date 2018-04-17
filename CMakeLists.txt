@@ -171,7 +171,7 @@ target_compile_definitions(
     FOLLY_HAVE_CLOCK_GETTIME=1
 )
 
-if(NOT MSVC AND NOT APPLE)
+if(NOT MSVC AND NOT APPLE AND NOT ANDROID)
   target_compile_definitions(
       folly_base
       PUBLIC
@@ -179,7 +179,7 @@ if(NOT MSVC AND NOT APPLE)
   )
 endif()
 
-if(APPLE)
+if(APPLE OR ANDROID)
   target_compile_definitions(
       folly_base
       PUBLIC
