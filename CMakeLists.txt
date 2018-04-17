@@ -152,6 +152,36 @@ list(REMOVE_ITEM files
   ${FOLLY_DIR}/memory/MallctlHelper.cpp
 )
 
+if(MSVC)
+  # Visual Studio 15 2017 Win64, C++17
+  list(REMOVE_ITEM files
+    ${FOLLY_DIR}/Random.cpp
+
+    ${FOLLY_DIR}/io/async/AsyncPipe.cpp
+    ${FOLLY_DIR}/io/async/AsyncSSLSocket.cpp
+    ${FOLLY_DIR}/io/async/AsyncServerSocket.cpp
+    ${FOLLY_DIR}/io/async/AsyncSignalHandler.cpp
+    ${FOLLY_DIR}/io/async/AsyncSocket.cpp
+    ${FOLLY_DIR}/io/async/AsyncTimeout.cpp
+    ${FOLLY_DIR}/io/async/AsyncUDPSocket.cpp
+    ${FOLLY_DIR}/io/async/EventBase.cpp
+    ${FOLLY_DIR}/io/async/EventBaseLocal.cpp
+    ${FOLLY_DIR}/io/async/EventBaseManager.cpp
+    ${FOLLY_DIR}/io/async/EventBaseThread.cpp
+    ${FOLLY_DIR}/io/async/EventHandler.cpp
+    ${FOLLY_DIR}/io/async/ScopedEventBaseThread.cpp
+    ${FOLLY_DIR}/io/async/VirtualEventBase.cpp
+
+    ${FOLLY_DIR}/futures/Future.cpp
+    ${FOLLY_DIR}/futures/ThreadWheelTimekeeper.cpp
+
+    ${FOLLY_DIR}/fibers/FiberManagerMap.cpp
+
+    ${FOLLY_DIR}/executors/GlobalExecutor.cpp
+    ${FOLLY_DIR}/executors/IOThreadPoolExecutor.cpp
+  )
+endif()
+
 add_library(folly_base
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
@@ -159,6 +189,7 @@ add_library(folly_base
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/FormatTables.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
+
 auto_source_group(folly ${FOLLY_DIR} ${files} ${hfiles})
 apply_folly_compile_options_to_target(folly_base)
 target_include_directories(folly_base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
