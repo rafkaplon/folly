@@ -331,7 +331,7 @@ static std::unique_ptr<IOBuf> addOutputBuffer(
   DCHECK(output.empty());
   auto buffer = IOBuf::create(size);
   buffer->append(buffer->capacity());
-  output = {buffer->writableData(), buffer->length()};
+  output = {buffer->writableData(), static_cast<size_t>(buffer->length())};
   return buffer;
 }
 
@@ -351,13 +351,13 @@ std::unique_ptr<IOBuf> StreamCodec::doCompress(IOBuf const* data) {
 
   // Compress the entire IOBuf chain into the IOBuf chain pointed to by buffer
   IOBuf const* current = data;
-  ByteRange input{current->data(), current->length()};
+  ByteRange input{current->data(), static_cast<size_t>(current->length())};
   StreamCodec::FlushOp flushOp = StreamCodec::FlushOp::NONE;
   bool done = false;
   while (!done) {
     while (input.empty() && current->next() != data) {
       current = current->next();
-      input = {current->data(), current->length()};
+      input = {current->data(), static_cast<size_t>(current->length())};
     }
     if (current->next() == data) {
       // This is the last input buffer so end the stream
@@ -405,13 +405,13 @@ std::unique_ptr<IOBuf> StreamCodec::doUncompress(
 
   // Uncompress the entire IOBuf chain into the IOBuf chain pointed to by buffer
   IOBuf const* current = data;
-  ByteRange input{current->data(), current->length()};
+  ByteRange input{current->data(), static_cast<size_t>(current->length())};
   StreamCodec::FlushOp flushOp = StreamCodec::FlushOp::NONE;
   bool done = false;
   while (!done) {
     while (input.empty() && current->next() != data) {
       current = current->next();
-      input = {current->data(), current->length()};
+      input = {current->data(), static_cast<size_t>(current->length())};
     }
     if (current->next() == data) {
       // Tell the uncompressor there is no more input (it may optimize)
