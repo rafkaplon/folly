@@ -158,8 +158,9 @@ list(REMOVE_ITEM files
   ${FOLLY_DIR}/memory/MallctlHelper.cpp
 )
 
-if(MSVC)
+if(MSVC OR IOS)
   # Visual Studio 15 2017 Win64, C++17
+  # Xcode 9.3
   list(REMOVE_ITEM files
     ${FOLLY_DIR}/Random.cpp
 
@@ -188,6 +189,37 @@ if(MSVC)
   )
 endif()
 
+if(IOS)
+  # Xcode 9.3
+  list(REMOVE_ITEM files
+    ${FOLLY_DIR}/Singleton.cpp
+    ${FOLLY_DIR}/SingletonStackTrace.cpp
+    ${FOLLY_DIR}/SingletonVault_c.cpp
+
+    ${FOLLY_DIR}/executors/CPUThreadPoolExecutor.cpp
+    ${FOLLY_DIR}/executors/ThreadPoolExecutor.cpp
+
+    ${FOLLY_DIR}/experimental/EnvUtil.cpp
+    ${FOLLY_DIR}/experimental/JSONSchema.cpp
+    ${FOLLY_DIR}/experimental/hazptr/hazptr.cpp
+    ${FOLLY_DIR}/experimental/observer/detail/Core.cpp
+    ${FOLLY_DIR}/experimental/observer/detail/ObserverManager.cpp
+
+    ${FOLLY_DIR}/fibers/Baton.cpp
+    ${FOLLY_DIR}/fibers/Fiber.cpp
+    ${FOLLY_DIR}/fibers/FiberManager.cpp
+    ${FOLLY_DIR}/fibers/GuardPageAllocator.cpp
+    ${FOLLY_DIR}/fibers/Semaphore.cpp
+
+    ${FOLLY_DIR}/futures/ThreadWheelTimekeeper.cpp
+
+    ${FOLLY_DIR}/init/Init.cpp
+
+    ${FOLLY_DIR}/io/ShutdownSocketSet.cpp
+    ${FOLLY_DIR}/io/async/Request.cpp
+  )
+endif()
+
 add_library(folly_base
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
@@ -195,6 +227,11 @@ add_library(folly_base
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/FormatTables.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
+
+if(IOS)
+  # Note: Android works fine
+  target_compile_definitions(folly_base PUBLIC FOLLY_MOBILE)
+endif()
 
 auto_source_group(folly ${FOLLY_DIR} ${files} ${hfiles})
 apply_folly_compile_options_to_target(folly_base)
