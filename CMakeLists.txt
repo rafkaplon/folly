@@ -158,7 +158,7 @@ list(REMOVE_ITEM files
   ${FOLLY_DIR}/memory/MallctlHelper.cpp
 )
 
-if(MSVC OR IOS)
+if(MSVC OR IOS OR ANDROID)
   # Visual Studio 15 2017 Win64, C++17
   # Xcode 9.3
   list(REMOVE_ITEM files
@@ -189,7 +189,7 @@ if(MSVC OR IOS)
   )
 endif()
 
-if(IOS)
+if(IOS OR ANDROID)
   # Xcode 9.3
   list(REMOVE_ITEM files
     ${FOLLY_DIR}/Singleton.cpp
