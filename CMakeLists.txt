@@ -228,8 +228,7 @@ add_library(folly_base
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
 
-if(IOS)
-  # Note: Android works fine
+if(IOS OR ANDROID)
   target_compile_definitions(folly_base PUBLIC FOLLY_MOBILE)
 endif()
 
