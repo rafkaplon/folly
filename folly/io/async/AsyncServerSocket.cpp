@@ -829,7 +829,13 @@ void AsyncServerSocket::handlerReady(uint16_t /* events */,
 
     // Accept a new client socket
 #ifdef SOCK_NONBLOCK
+# if defined(__ANDROID__) && defined(__ANDROID_API__) && (__ANDROID_API__ < 21)
+    // 'accept4' available since API 21:
+    // * https://android.googlesource.com/platform/bionic/+/6880f936173081297be0dc12f687d341b86a4cfa/libc/libc.map.txt#226
+    int clientSocket = accept(fd, saddr, &addrLen);
+# else
     int clientSocket = accept4(fd, saddr, &addrLen, SOCK_NONBLOCK);
+# endif
 #else
     int clientSocket = accept(fd, saddr, &addrLen);
 #endif
