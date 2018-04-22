@@ -102,7 +102,6 @@ TypeError::~TypeError() = default;
         apply(std::string);           \
         break;                        \
       default:                        \
-        CHECK(0);                     \
         abort();                      \
     }                                 \
   } while (0)

@@ -147,7 +147,9 @@ void FormatValue<double>::formatHelper(
 
   int len = builder.position();
   builder.Finalize();
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
   DCHECK_GT(len, 0);
+#endif
 
   // Add '+' or ' ' sign if needed
   char* p = buf + 1;

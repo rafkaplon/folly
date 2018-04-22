@@ -697,7 +697,9 @@ toAppend(
       conv.ToFixed(value, int(numDigits), &builder);
       break;
     default:
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
       CHECK(mode == DoubleToStringConverter::PRECISION);
+#endif
       conv.ToPrecision(value, int(numDigits), &builder);
       break;
   }

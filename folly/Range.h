@@ -26,7 +26,9 @@
 #include <folly/portability/String.h>
 
 #include <boost/operators.hpp>
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
 #include <glog/logging.h>
+#endif
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -510,7 +512,9 @@ class Range : private boost::totally_ordered<Range<Iter>> {
   }
 
   value_type& operator[](size_t i) {
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
     DCHECK_GT(size(), i);
+#endif
     return b_[i];
   }
 

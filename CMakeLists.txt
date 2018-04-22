@@ -24,6 +24,14 @@ project(${PACKAGE_NAME})
 
 option(FOLLY_BUILD_FINGERPRINT "Build Fingerprint library" OFF)
 
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore")
+  set(default_minimal ON)
+else()
+  set(default_minimal OFF)
+endif()
+
+option(FOLLY_MINIMAL_CONFIGURATION "Minimal configuration" ${default_minimal})
+
 if(FALSE)
 
 if (MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1920)
@@ -220,6 +228,27 @@ if(IOS OR ANDROID)
   )
 endif()
 
+if(FOLLY_MINIMAL_CONFIGURATION)
+  set(
+      files
+      ${FOLLY_DIR}/Conv.cpp
+      ${FOLLY_DIR}/Demangle.cpp
+      ${FOLLY_DIR}/Expected.cpp
+      ${FOLLY_DIR}/Format.cpp
+      ${FOLLY_DIR}/FormatArg.cpp
+      ${FOLLY_DIR}/Optional.cpp
+      ${FOLLY_DIR}/ScopeGuard.cpp
+      ${FOLLY_DIR}/String.cpp
+      ${FOLLY_DIR}/Unicode.cpp
+      ${FOLLY_DIR}/dynamic.cpp
+      ${FOLLY_DIR}/json.cpp
+      ${FOLLY_DIR}/lang/Assume.cpp
+      ${FOLLY_DIR}/lang/ColdClass.cpp
+      ${FOLLY_DIR}/memory/detail/MallocImpl.cpp
+      ${FOLLY_DIR}/portability/BitsFunctexcept.cpp
+  )
+endif()
+
 add_library(folly_base
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
@@ -227,6 +256,11 @@ add_library(folly_base
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/FormatTables.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
+
+if(FOLLY_MINIMAL_CONFIGURATION)
+  target_compile_definitions(folly_base PUBLIC FOLLY_MINIMAL_CONFIGURATION)
+  target_compile_options(folly_base PRIVATE "/wd4146")
+endif()
 
 if(IOS OR ANDROID)
   target_compile_definitions(folly_base PUBLIC FOLLY_MOBILE)
@@ -268,6 +302,15 @@ if(APPLE OR ANDROID)
   )
 endif()
 
+if(MSVC)
+  target_compile_definitions(
+      folly_base
+      PRIVATE
+      _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
+      _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+  )
+endif()
+
 set(FOLLY_SHINY_DEPENDENCIES
   Boost::chrono
   Boost::context
@@ -289,6 +332,8 @@ set(FOLLY_INCLUDE_DIRECTORIES
   ${DOUBLE_CONVERSION_INCLUDE_DIR}
 )
 
+if(NOT FOLLY_MINIMAL_CONFIGURATION)
+
 if(TARGET gflags)
   set(FOLLY_SHINY_DEPENDENCIES ${FOLLY_SHINY_DEPENDENCIES} gflags)
 else()
@@ -308,6 +353,8 @@ if(TARGET Libevent::event_core)
 else()
   set(FOLLY_LINK_LIBRARIES ${FOLLY_LINK_LIBRARIES} ${LIBEVENT_LIB})
   set(FOLLY_INCLUDE_DIRECTORIES ${FOLLY_INCLUDE_DIRECTORIES} ${LIBEVENT_INCLUDE_DIR})
+endif()
+
 endif()
 
 set(win_libs "")

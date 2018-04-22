@@ -23,7 +23,9 @@
 #include <iterator>
 #include <stdexcept>
 
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
 #include <glog/logging.h>
+#endif
 
 #include <folly/ScopeGuard.h>
 
@@ -112,7 +114,9 @@ void stringAppendfImpl(std::string& output, const char* format, va_list args) {
   // The second call can take fewer bytes if, for example, we were printing a
   // string buffer with null-terminating char using a width specifier -
   // vsnprintf("%.*s", buf.size(), buf)
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
   CHECK(bytes_used >= final_bytes_used);
+#endif
 
   // We don't keep the trailing '\0' in our output string
   output.append(heap_buffer.get(), size_t(final_bytes_used));
@@ -587,7 +591,9 @@ size_t hexDumpLine(const void* ptr, size_t offset, size_t size,
   }
   line.append(16 - n, ' ');
   line.push_back('|');
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
   DCHECK_EQ(line.size(), 78u);
+#endif
 
   return n;
 }

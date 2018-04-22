@@ -16,14 +16,24 @@
 
 #include <folly/lang/Assume.h>
 
+#if defined(FOLLY_MINIMAL_CONFIGURATION)
+#include <stdexcept> // std::runtime_error
+#else
 #include <glog/logging.h>
+#endif
 
 namespace folly {
 
 namespace detail {
 
 void assume_check(bool cond) {
-  CHECK(cond) << "compiler-hint assumption fails at runtime";
+#if defined(FOLLY_MINIMAL_CONFIGURATION)
+    if (!cond) {
+        throw std::runtime_error("compiler-hint assumption fails at runtime");
+    }
+#else
+    CHECK(cond) << "compiler-hint assumption fails at runtime";
+#endif
 }
 
 } // namespace detail

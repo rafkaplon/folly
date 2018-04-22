@@ -29,7 +29,9 @@
 #include <type_traits>
 #include <utility>
 
-#include <glog/logging.h>
+#if !defined(FOLLY_MINIMAL_CONFIGURATION)
+# include <glog/logging.h>
+#endif
 
 #include <folly/CppAttributes.h>
 #include <folly/Likely.h>
