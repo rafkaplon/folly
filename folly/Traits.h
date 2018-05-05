@@ -44,6 +44,10 @@
       return true;                                                             \
     }                                                                          \
     template <typename>                                                        \
+    static constexpr bool test(std::nullptr_t) {                               \
+      return false;                                                            \
+    }                                                                          \
+    template <typename>                                                        \
     static constexpr bool test(...) {                                          \
       return false;                                                            \
     }                                                                          \
