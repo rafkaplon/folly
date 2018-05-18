@@ -27,7 +27,7 @@ option(FOLLY_BUILD_FINGERPRINT "Build Fingerprint library" OFF)
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore")
   set(default_minimal ON)
 else()
-  set(default_minimal OFF)
+  set(default_minimal ON)
 endif()
 
 option(FOLLY_MINIMAL_CONFIGURATION "Minimal configuration" ${default_minimal})
@@ -83,9 +83,7 @@ add_custom_command(
 if(HUNTER_ENABLED)
   include(folly-deps-hunter)
 else()
-
-include(folly-deps) # Find the required packages
-
+  include(folly-deps) # Find the required packages
 endif()
 
 if(MSVC OR APPLE)
@@ -259,7 +257,10 @@ add_library(folly_base
 
 if(FOLLY_MINIMAL_CONFIGURATION)
   target_compile_definitions(folly_base PUBLIC FOLLY_MINIMAL_CONFIGURATION)
-  target_compile_options(folly_base PRIVATE "/wd4146")
+
+  if (WIN32)
+    target_compile_options(folly_base PRIVATE "/wd4146")
+  endif()
 endif()
 
 if(IOS OR ANDROID)
@@ -294,7 +295,7 @@ if(NOT MSVC AND NOT APPLE AND NOT ANDROID)
   )
 endif()
 
-if(APPLE OR ANDROID)
+if(APPLE OR ANDROID OR TVOS)
   target_compile_definitions(
       folly_base
       PUBLIC
@@ -311,6 +312,8 @@ if(MSVC)
   )
 endif()
 
+if(NOT FOLLY_MINIMAL_CONFIGURATION)
+
 set(FOLLY_SHINY_DEPENDENCIES
   Boost::chrono
   Boost::context
@@ -323,6 +326,13 @@ set(FOLLY_SHINY_DEPENDENCIES
   OpenSSL::Crypto
   Threads::Threads
 )
+
+else()
+
+  set(FOLLY_SHINY_DEPENDENCIES Threads::Threads)
+
+endif()
+
 
 set(FOLLY_LINK_LIBRARIES
   ${DOUBLE_CONVERSION_LIBRARY}
@@ -373,6 +383,8 @@ target_include_directories(folly_base
   PUBLIC
     ${FOLLY_INCLUDE_DIRECTORIES}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/boost>
+    $<INSTALL_INTERFACE:include/boost>
 )
 
 if(NOT HUNTER_ENABLED)
@@ -458,6 +470,7 @@ install(
   DESTINATION lib/cmake/folly
   NAMESPACE Folly::
 )
+install(DIRECTORY boost DESTINATION include)
 
 if(HUNTER_ENABLED)
   set_target_properties(folly_base PROPERTIES EXPORT_NAME folly)
