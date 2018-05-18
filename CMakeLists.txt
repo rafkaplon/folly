@@ -470,7 +470,15 @@ install(
   DESTINATION lib/cmake/folly
   NAMESPACE Folly::
 )
-install(DIRECTORY boost DESTINATION include)
+
+# Boost uses chrono, context, date_time, filesystem, program_options, regex and system
+install(DIRECTORY boost DESTINATION include
+         PATTERN "spirit/*" EXCLUDE
+         PATTERN "fusion/*" EXCLUDE
+         PATTERN "phoenix/*" EXCLUDE
+         PATTERN "hana/*" EXCLUDE
+         PATTERN "mpl/*" EXCLUDE
+         )
 
 if(HUNTER_ENABLED)
   set_target_properties(folly_base PROPERTIES EXPORT_NAME folly)
