@@ -477,7 +477,6 @@ install(DIRECTORY boost DESTINATION include
          PATTERN "fusion/*" EXCLUDE
          PATTERN "phoenix/*" EXCLUDE
          PATTERN "hana/*" EXCLUDE
-         PATTERN "mpl/*" EXCLUDE
          )
 
 if(HUNTER_ENABLED)
