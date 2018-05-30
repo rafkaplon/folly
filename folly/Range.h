@@ -26,9 +26,7 @@
 #include <folly/portability/String.h>
 
 #include <boost/operators.hpp>
-#if !defined(FOLLY_MINIMAL_CONFIGURATION)
 #include <glog/logging.h>
-#endif
 #include <algorithm>
 #include <array>
 #include <cassert>

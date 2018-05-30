@@ -19,9 +19,7 @@
 #include <algorithm>
 #include <string>
 
-#if !defined(FOLLY_MINIMAL_CONFIGURATION)
 #include <glog/logging.h>
-#endif
 
 #include <folly/Likely.h>
 

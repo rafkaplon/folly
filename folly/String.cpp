@@ -23,9 +23,7 @@
 #include <iterator>
 #include <stdexcept>
 
-#if !defined(FOLLY_MINIMAL_CONFIGURATION)
 #include <glog/logging.h>
-#endif
 
 #include <folly/ScopeGuard.h>
 
