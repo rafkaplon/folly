@@ -384,8 +384,6 @@ target_include_directories(folly_base
   PUBLIC
     ${FOLLY_INCLUDE_DIRECTORIES}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/boost>
-    $<INSTALL_INTERFACE:include/boost>
 )
 
 if(NOT HUNTER_ENABLED)
