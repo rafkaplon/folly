@@ -61,8 +61,7 @@ constexpr auto invoke(M(C::*d), Args&&... args)
 
 #endif
 
-// Only available in >= MSVC 2017 15.3
-#if __cpp_lib_is_invocable >= 201703 || _MSC_VER >= 1911
+#if __cpp_lib_is_invocable >= 201703
 
 namespace folly {
 
