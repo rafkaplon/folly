@@ -47,6 +47,11 @@ FOLLY_NODISCARD inline T* launder(T* in) noexcept {
 #if FOLLY_HAS_BUILTIN(__builtin_launder) || __GNUC__ >= 7
   // The builtin has no unwanted side-effects.
   return __builtin_launder(in);
+#elif __pnacl__
+  // PNaCl does not support inline assembly. After testing it seems that NaCl doesn't have
+  // optimizations for const members of structs. 
+  asm volatile("" ::: "memory");
+  return in;
 #elif __GNUC__
   // This inline assembler block declares that `in` is an input and an output,
   // so the compiler has to assume that it has been changed inside the block.

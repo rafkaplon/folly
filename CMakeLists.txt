@@ -315,7 +315,7 @@ if(NOT MSVC)
   )
 endif()
 
-if(NOT MSVC AND NOT APPLE AND NOT ANDROID AND NOT PS4)
+if(NOT MSVC AND NOT APPLE AND NOT ANDROID AND NOT PS4 AND NOT TIZEN_NACL)
   target_compile_definitions(
       folly_base
       PUBLIC
@@ -323,7 +323,7 @@ if(NOT MSVC AND NOT APPLE AND NOT ANDROID AND NOT PS4)
   )
 endif()
 
-if(APPLE OR ANDROID OR TVOS)
+if(APPLE OR ANDROID OR TVOS OR TIZEN_NACL)
   target_compile_definitions(
       folly_base
       PUBLIC
