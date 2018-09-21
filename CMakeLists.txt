@@ -58,6 +58,28 @@ set(FOLLY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/folly")
 
 # Generate a few tables and create the main config file.
 find_package(PythonInterp REQUIRED)
+
+if (PS4)
+  
+  # PS4 generator was not able to build the table files with add_custom_command so we switched it to an add_custom_target which will run as a dependency. 
+
+  add_custom_target(
+    genTableFiles ALL 
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/folly/build/
+    COMMAND ${PYTHON_EXECUTABLE} "${FOLLY_DIR}/build/generate_escape_tables.py"
+    COMMAND ${PYTHON_EXECUTABLE} "${FOLLY_DIR}/build/generate_format_tables.py"
+    COMMAND ${PYTHON_EXECUTABLE} "${FOLLY_DIR}/build/generate_varint_tables.py"
+  )
+
+  set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/folly/build/EscapeTables.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/folly/build/FormatTables.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
+    PROPERTIES GENERATED 1
+  )
+
+else()
+
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/folly/build/EscapeTables.cpp
   COMMAND ${PYTHON_EXECUTABLE} "${FOLLY_DIR}/build/generate_escape_tables.py"
@@ -80,19 +102,22 @@ add_custom_command(
   COMMENT "Generating the group varint tables..." VERBATIM
 )
 
+  endif()
+  
+
 if(HUNTER_ENABLED)
   include(folly-deps-hunter)
 else()
   include(folly-deps) # Find the required packages
 endif()
 
-if(MSVC OR APPLE)
+if(MSVC OR APPLE OR PS4)
   set(FOLLY_HAVE_MEMRCHR FALSE)
 else()
   set(FOLLY_HAVE_MEMRCHR TRUE)
 endif()
 
-if(WIN32 OR APPLE)
+if(WIN32 OR APPLE OR PS4)
   set(FOLLY_HAVE_MALLOC_H FALSE)
 else()
   set(FOLLY_HAVE_MALLOC_H TRUE)
@@ -195,7 +220,7 @@ if(MSVC OR IOS OR ANDROID)
   )
 endif()
 
-if(IOS OR ANDROID)
+if(IOS OR ANDROID OR PS4)
   # Xcode 9.3
   list(REMOVE_ITEM files
     ${FOLLY_DIR}/Singleton.cpp
@@ -254,6 +279,9 @@ add_library(folly_base
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/FormatTables.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/folly/build/GroupVarintTables.cpp
 )
+if (PS4)
+  add_dependencies(folly_base genTableFiles)
+endif()
 
 if(FOLLY_MINIMAL_CONFIGURATION)
   target_compile_definitions(folly_base PUBLIC FOLLY_MINIMAL_CONFIGURATION)
@@ -287,7 +315,7 @@ if(NOT MSVC)
   )
 endif()
 
-if(NOT MSVC AND NOT APPLE AND NOT ANDROID)
+if(NOT MSVC AND NOT APPLE AND NOT ANDROID AND NOT PS4)
   target_compile_definitions(
       folly_base
       PUBLIC
@@ -303,7 +331,7 @@ if(APPLE OR ANDROID OR TVOS)
   )
 endif()
 
-if(MSVC)
+if(MSVC OR PS4)
   target_compile_definitions(
       folly_base
       PRIVATE
