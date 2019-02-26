@@ -57,7 +57,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/folly/build)
 set(FOLLY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/folly")
 
 # Generate a few tables and create the main config file.
-find_package(PythonInterp REQUIRED)
+find_package(PythonInterp 2 REQUIRED)
 
 if (PS4)
   
