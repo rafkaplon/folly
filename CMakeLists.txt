@@ -8,6 +8,12 @@ if (POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
 endif()
 
+include("CMake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/b17d54183df2b92531c2150ec45a2cdc361a75c7.zip"
+    SHA1 "5f1cf63200d1129176ec7377ceed927cd9cf4491"
+)
+
 # includes
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
