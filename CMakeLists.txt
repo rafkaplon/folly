@@ -49,6 +49,10 @@ option(BUILD_SHARED_LIBS
 mark_as_advanced(BUILD_SHARED_LIBS)
 set(FOLLY_SUPPORT_SHARED_LIBRARY "${BUILD_SHARED_LIBS}")
 
+# Configuration similar to:
+# * https://github.com/facebook/react-native/blob/v0.59.6/third-party-podspecs/Folly.podspec#L20-L34
+option(FOLLY_POD_CONFIGURATION "Pod configuration" OFF)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # Check target architecture
   if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -88,7 +92,12 @@ else()
 endif()
 include(FollyFunctions)
 
+if(FOLLY_POD_CONFIGURATION)
+  add_library(folly_deps INTERFACE)
+else()
 include(folly-deps) # Find the required packages
+endif()
+
 include(FollyConfigChecks)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/folly-config.h.cmake
@@ -192,10 +201,32 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   )
 endif()
 
+if(FOLLY_POD_CONFIGURATION)
+  add_library(
+      folly_base
+      OBJECT
+      folly/String.cpp
+      folly/Conv.cpp
+      folly/Demangle.cpp
+      folly/Format.cpp
+      folly/ScopeGuard.cpp
+      folly/Unicode.cpp
+      folly/dynamic.cpp
+      folly/json.cpp
+      folly/json_pointer.cpp
+      folly/container/detail/F14Table.cpp
+      folly/detail/Demangle.cpp
+      folly/hash/SpookyHashV2.cpp
+      folly/lang/Assume.cpp
+      folly/lang/ColdClass.cpp
+      folly/memory/detail/MallocImpl.cpp
+  )
+else()
 add_library(folly_base OBJECT
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
 )
+endif()
 auto_source_group(folly ${FOLLY_DIR} ${files} ${hfiles})
 apply_folly_compile_options_to_target(folly_base)
 # Add the generated files to the correct source group.
