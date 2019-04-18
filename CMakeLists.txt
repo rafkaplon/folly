@@ -232,6 +232,18 @@ apply_folly_compile_options_to_target(folly_base)
 # Add the generated files to the correct source group.
 source_group("folly" FILES ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h)
 
+hunter_add_package(double-conversion)
+find_package(double-conversion CONFIG REQUIRED)
+target_link_libraries(folly_deps INTERFACE double-conversion::double-conversion)
+
+hunter_add_package(glog)
+find_package(glog CONFIG REQUIRED)
+target_link_libraries(folly_deps INTERFACE glog::glog)
+
+hunter_add_package(Boost)
+find_package(Boost CONFIG REQUIRED)
+target_link_libraries(folly_deps INTERFACE Boost::boost)
+
 # Generate pkg-config variables from folly_deps before we add our own
 # build/install-time include directory generator expressions
 include(GenPkgConfig)
