@@ -215,7 +215,7 @@ if(FOLLY_POD_CONFIGURATION)
       folly/json.cpp
       folly/json_pointer.cpp
       folly/container/detail/F14Table.cpp
-      folly/detail/Demangle.cpp
+      folly/detail/Demangle_2.cpp
       folly/hash/SpookyHashV2.cpp
       folly/lang/Assume.cpp
       folly/lang/ColdClass.cpp
@@ -267,6 +267,7 @@ target_compile_definitions(folly_base
 
 add_library(folly
   $<TARGET_OBJECTS:folly_base>
+  folly/dummy.cpp
 )
 apply_folly_compile_options_to_target(folly)
 
