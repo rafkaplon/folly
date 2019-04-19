@@ -94,6 +94,13 @@ include(FollyFunctions)
 
 if(FOLLY_POD_CONFIGURATION)
   add_library(folly_deps INTERFACE)
+  if(IOS OR ANDROID)
+    target_compile_definitions(
+        folly_deps
+        INTERFACE
+        FOLLY_MOBILE
+    )
+  endif()
 else()
 include(folly-deps) # Find the required packages
 endif()
