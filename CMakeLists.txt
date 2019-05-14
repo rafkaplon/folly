@@ -51,7 +51,7 @@ set(FOLLY_SUPPORT_SHARED_LIBRARY "${BUILD_SHARED_LIBS}")
 
 # Configuration similar to:
 # * https://github.com/facebook/react-native/blob/v0.59.6/third-party-podspecs/Folly.podspec#L20-L34
-option(FOLLY_POD_CONFIGURATION "Pod configuration" OFF)
+option(FOLLY_POD_CONFIGURATION "Pod configuration" ON)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # Check target architecture
@@ -101,6 +101,11 @@ if(FOLLY_POD_CONFIGURATION)
         FOLLY_MOBILE
     )
   endif()
+  target_compile_definitions(
+    folly_deps
+    INTERFACE
+    FOLLY_MOBILE
+    )
 else()
 include(folly-deps) # Find the required packages
 endif()
@@ -226,6 +231,7 @@ if(FOLLY_POD_CONFIGURATION)
       folly/hash/SpookyHashV2.cpp
       folly/lang/Assume.cpp
       folly/lang/ColdClass.cpp
+      folly/lang/SafeAssert.cpp
       folly/memory/detail/MallocImpl.cpp
   )
 else()
@@ -247,9 +253,14 @@ hunter_add_package(glog)
 find_package(glog CONFIG REQUIRED)
 target_link_libraries(folly_deps INTERFACE glog::glog)
 
-hunter_add_package(Boost)
-find_package(Boost CONFIG REQUIRED)
-target_link_libraries(folly_deps INTERFACE Boost::boost)
+option(USE_HUNTER_BOOST "help string describing USE_HUNTER_BOOST" OFF)
+if (USE_HUNTER_BOOST)
+  hunter_add_package(Boost)
+  find_package(Boost CONFIG REQUIRED)
+  target_link_libraries(folly_deps INTERFACE Boost::boost)
+endif()
+
+
 
 # Generate pkg-config variables from folly_deps before we add our own
 # build/install-time include directory generator expressions
@@ -293,6 +304,15 @@ install(
   DESTINATION ${INCLUDE_INSTALL_DIR}/folly
   COMPONENT dev
 )
+
+if (NOT USE_HUNTER_BOOST)
+  install(DIRECTORY boost DESTINATION include
+           PATTERN "spirit/*" EXCLUDE
+           PATTERN "fusion/*" EXCLUDE
+           PATTERN "phoenix/*" EXCLUDE
+           PATTERN "hana/*" EXCLUDE
+           )
+endif()
 
 # Generate the folly-config.cmake file for installation so that
 # downstream projects that use on folly can easily depend on it in their CMake
