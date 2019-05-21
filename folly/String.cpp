@@ -484,7 +484,7 @@ fbstring errnoStr(int err) {
   } else {
     result.assign(buf);
   }
-#elif FOLLY_HAVE_XSI_STRERROR_R || defined(__APPLE__)
+#elif FOLLY_HAVE_XSI_STRERROR_R || defined(__APPLE__) || defined(ANDROID)
 
   // Using XSI-compatible strerror_r
   int r = strerror_r(err, buf, sizeof(buf));
