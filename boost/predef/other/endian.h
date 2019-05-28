@@ -60,7 +60,7 @@ information and acquired knowledge:
 #       if BOOST_OS_MACOS
 #           include <machine/endian.h>
 #       else
-#           if BOOST_OS_BSD
+#           if BOOST_OS_BSD && !defined(__ORBIS__)
 #               if BOOST_OS_BSD_OPEN
 #                   include <machine/endian.h>
 #               else
@@ -148,7 +148,8 @@ information and acquired knowledge:
 #       undef BOOST_ENDIAN_BIG_BYTE
 #       define BOOST_ENDIAN_BIG_BYTE BOOST_VERSION_NUMBER_AVAILABLE
 #   endif
-#   if BOOST_ARCH_IA64 || \
+#   if BOOST_ARCH_AMD64 || \
+        BOOST_ARCH_IA64 || \
         BOOST_ARCH_X86 || \
         BOOST_ARCH_BLACKFIN
 #       undef BOOST_ENDIAN_LITTLE_BYTE
