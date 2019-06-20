@@ -79,7 +79,7 @@ endforeach()
 function(apply_folly_compile_options_to_target THETARGET)
   # The general options passed:
   target_compile_options(${THETARGET}
-    PUBLIC
+    PRIVATE
       /EHa # Enable both SEH and C++ Exceptions.
       /GF # There are bugs with constexpr StringPiece when string pooling is disabled.
       /Zc:referenceBinding # Disallow temporaries from binding to non-const lvalue references.
