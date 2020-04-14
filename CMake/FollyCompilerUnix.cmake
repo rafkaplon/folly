@@ -1,6 +1,11 @@
 set(CMAKE_CXX_FLAGS_COMMON "-g -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_COMMON}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_COMMON} -O3")
+if(TIZEN_NACL)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_COMMON} -Os")
+else()
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_COMMON} -O3")
+endif()
+
 
 function(apply_folly_compile_options_to_target THETARGET)
   target_compile_definitions(${THETARGET}
