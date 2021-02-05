@@ -113,6 +113,17 @@ check_cxx_source_compiles("
   int main() { return 0; }"
   FOLLY_HAVE_STD__IS_TRIVIALLY_COPYABLE
 )
+
+if (BLUESKY OR TIZEN_NACL OR WEBOS OR PS4 OR UWP OR FIREBOLT)
+  set(FOLLY_HAVE_UNALIGNED_ACCESS ON CACHE INTERNAL "")
+  set(FOLLY_HAVE_WCHAR_SUPPORT OFF CACHE INTERNAL "")
+  set(HAVE_VSNPRINTF_ERRORS OFF CACHE INTERNAL "")
+  set(FOLLY_HAVE_LINUX_VDSO OFF CACHE INTERNAL "")
+  set(FOLLY_HAVE_XSI_STRERROR_R OFF CACHE INTERNAL "")
+
+  
+endif()
+
 check_cxx_source_runs("
   int main(int, char**) {
     char buf[64] = {0};

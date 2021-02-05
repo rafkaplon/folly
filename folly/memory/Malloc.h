@@ -23,6 +23,8 @@
 #include <folly/portability/Config.h>
 #include <folly/portability/Malloc.h>
 
+#define YI_SKIP_JEMALLOC
+
 /**
  * Define various MALLOCX_* macros normally provided by jemalloc.  We define
  * them so that we don't have to include jemalloc.h, in case the program is
@@ -77,6 +79,8 @@ namespace folly {
   }
 #else
 FOLLY_NOINLINE inline bool usingJEMalloc() noexcept {
+  return false;
+#if !defined(YI_SKIP_JEMALLOC)
   // Checking for rallocx != nullptr is not sufficient; we may be in a
   // dlopen()ed module that depends on libjemalloc, so rallocx is resolved, but
   // the main program might be using a different memory allocator.
@@ -127,6 +131,7 @@ FOLLY_NOINLINE inline bool usingJEMalloc() noexcept {
   ();
 
   return result;
+#endif
 }
 #endif
 
@@ -140,10 +145,15 @@ inline size_t goodMallocSize(size_t minSize) noexcept {
     return minSize;
   }
 
+#if !defined(YI_SKIP_JEMALLOC)
   // nallocx returns 0 if minSize can't succeed, but 0 is not actually
   // a goodMallocSize if you want minSize
   auto rv = nallocx(minSize, 0);
   return rv ? rv : minSize;
+#else
+  return minSize;
+
+#endif
 }
 
 // We always request "good" sizes for allocation, so jemalloc can

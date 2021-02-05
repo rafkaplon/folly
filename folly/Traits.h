@@ -34,6 +34,10 @@
       return true;                                                             \
     }                                                                          \
     template <typename>                                                        \
+    static constexpr bool test(std::nullptr_t) {                               \
+      return false;                                                            \
+    }                                                                          \
+    template <typename>                                                        \
     static constexpr bool test(...) {                                          \
       return false;                                                            \
     }                                                                          \
@@ -483,7 +487,7 @@ namespace traits_detail_IsNothrowSwappable {
 // enabled.
 template <typename T>
 using IsNothrowSwappable = std::is_nothrow_swappable<T>;
-#elif _CPPLIB_VER
+#elif _CPPLIB_VER  && !defined(__ORBIS__)
 // MSVC defines the base even if C++17 is disabled, and MSVC has
 // issues with our fallback implementation due to over-eager
 // evaluation of noexcept.

@@ -11,6 +11,13 @@
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
+ 
+find_package(double-conversion CONFIG REQUIRED NO_CMAKE_FIND_ROOT_PATH)
+find_package(glog CONFIG REQUIRED NO_CMAKE_FIND_ROOT_PATH)
+
+if (@USE_HUNTER_BOOST@)
+	find_package(Boost CONFIG REQUIRED NO_CMAKE_FIND_ROOT_PATH)
+endif()
 
 set_and_check(FOLLY_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
 set_and_check(FOLLY_CMAKE_DIR "@PACKAGE_CMAKE_INSTALL_DIR@")

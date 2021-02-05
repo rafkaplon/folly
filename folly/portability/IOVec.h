@@ -18,7 +18,7 @@
 
 // This file only exists because without it there would be
 // a circular dependency between SysUio.h, Sockets.h, and Unistd.h
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__native_client__)
 #include <limits.h>
 #include <sys/uio.h>
 #else

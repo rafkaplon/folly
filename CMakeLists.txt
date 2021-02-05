@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2)
 # We use the GoogleTest module if it is available (only in CMake 3.9+)
 # It requires CMP0054 and CMP0057 to be enabled.
 if (POLICY CMP0054)
@@ -26,6 +26,12 @@ endif()
 if(POLICY CMP0075)
   cmake_policy(SET CMP0075 NEW)
 endif()
+
+include("CMake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/b17d54183df2b92531c2150ec45a2cdc361a75c7.zip"
+    SHA1 "5f1cf63200d1129176ec7377ceed927cd9cf4491"
+)
 
 # includes
 set(CMAKE_MODULE_PATH
@@ -71,6 +77,10 @@ set(FOLLY_SUPPORT_SHARED_LIBRARY "${BUILD_SHARED_LIBS}")
 include(FBBuildOptions)
 fb_activate_static_library_option()
 
+# Configuration similar to:
+# * https://github.com/facebook/react-native/blob/v0.59.6/third-party-podspecs/Folly.podspec#L20-L34
+option(FOLLY_POD_CONFIGURATION "Pod configuration" ON)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # Check target architecture
   if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -103,15 +113,38 @@ set(FOLLY_HAVE_PTHREAD "${CMAKE_USE_PTHREADS_INIT}")
 list(APPEND CMAKE_REQUIRED_LIBRARIES Threads::Threads)
 list(APPEND FOLLY_LINK_LIBRARIES Threads::Threads)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(UWP OR VS2017 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
   include(FollyCompilerMSVC)
 else()
   include(FollyCompilerUnix)
 endif()
 include(FollyFunctions)
 
+if(FOLLY_POD_CONFIGURATION)
+  add_library(folly_deps INTERFACE)
+  if(IOS OR ANDROID)
+    target_compile_definitions(
+        folly_deps
+        INTERFACE
+        FOLLY_MOBILE
+    )
+  endif()
+  target_compile_definitions(
+    folly_deps
+    INTERFACE
+    FOLLY_MOBILE
+    )
+else()
 include(folly-deps) # Find the required packages
+endif()
+
 include(FollyConfigChecks)
+
+if (TVOS)
+  # TVos doesn't have memrchr, but the check fails to work / finds its
+  unset(FOLLY_HAVE_MEMRCHR CACHE)
+endif()
+
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/folly-config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
@@ -195,7 +228,7 @@ if (NOT FOLLY_USE_SYMBOLIZER)
     ${FOLLY_DIR}/SingletonStackTrace.cpp
   )
 endif()
-if (NOT ${LIBAIO_FOUND})
+if (NOT LIBAIO_FOUND)
   list(REMOVE_ITEM files
     ${FOLLY_DIR}/experimental/io/AsyncIO.cpp
   )
@@ -203,7 +236,7 @@ if (NOT ${LIBAIO_FOUND})
     ${FOLLY_DIR}/experimental/io/AsyncIO.h
   )
 endif()
-if (NOT ${LIBURING_FOUND})
+if (NOT LIBURING_FOUND)
   list(REMOVE_ITEM files
     ${FOLLY_DIR}/experimental/io/IoUring.cpp
     ${FOLLY_DIR}/experimental/io/IoUringBackend.cpp
@@ -213,7 +246,7 @@ if (NOT ${LIBURING_FOUND})
     ${FOLLY_DIR}/experimental/io/IoUringBackend.h
   )
 endif()
-if (NOT ${LIBAIO_FOUND} AND NOT ${LIBURING_FOUND})
+if (NOT LIBAIO_FOUND AND NOT LIBURING_FOUND)
   list(REMOVE_ITEM files
     ${FOLLY_DIR}/experimental/io/AsyncBase.cpp
     ${FOLLY_DIR}/experimental/io/PollIoBackend.cpp
@@ -311,14 +344,53 @@ else()
   )
 endif()
 
+if(FOLLY_POD_CONFIGURATION)
+  add_library(
+      folly_base
+      OBJECT
+      folly/String.cpp
+      folly/Conv.cpp
+      folly/Demangle.cpp
+      folly/Format.cpp
+      folly/ScopeGuard.cpp
+      folly/Unicode.cpp
+      folly/dynamic.cpp
+      folly/json.cpp
+      folly/json_pointer.cpp
+      folly/container/detail/F14Table.cpp
+      folly/detail/Demangle_2.cpp
+      folly/hash/SpookyHashV2.cpp
+      folly/lang/Assume.cpp
+      folly/lang/SafeAssert.cpp
+      folly/memory/detail/MallocImpl.cpp
+  )
+else()
 add_library(folly_base OBJECT
   ${files} ${hfiles}
   ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h
 )
+endif()
 auto_source_group(folly ${FOLLY_DIR} ${files} ${hfiles})
 apply_folly_compile_options_to_target(folly_base)
 # Add the generated files to the correct source group.
 source_group("folly" FILES ${CMAKE_CURRENT_BINARY_DIR}/folly/folly-config.h)
+
+hunter_add_package(double-conversion)
+find_package(double-conversion CONFIG REQUIRED)
+target_link_libraries(folly_deps INTERFACE double-conversion::double-conversion)
+
+hunter_add_package(glog)
+find_package(glog CONFIG REQUIRED)
+target_link_libraries(folly_deps INTERFACE glog::glog)
+
+option(USE_HUNTER_BOOST "help string describing USE_HUNTER_BOOST" OFF)
+if (USE_HUNTER_BOOST)
+  hunter_add_package(Boost)
+  find_package(Boost CONFIG REQUIRED)
+  target_link_libraries(folly_deps INTERFACE Boost::boost)
+endif()
+
+
 
 # Generate pkg-config variables from folly_deps before we add our own
 # build/install-time include directory generator expressions
@@ -354,6 +426,7 @@ option(PYTHON_EXTENSIONS
 
 add_library(folly
   $<TARGET_OBJECTS:folly_base>
+  folly/dummy.cpp
 )
 apply_folly_compile_options_to_target(folly)
 target_compile_features(folly INTERFACE cxx_generic_lambdas)
@@ -387,6 +460,15 @@ install(
   DESTINATION ${INCLUDE_INSTALL_DIR}/folly
   COMPONENT dev
 )
+
+if (NOT USE_HUNTER_BOOST)
+  install(DIRECTORY boost DESTINATION include
+           PATTERN "spirit/*" EXCLUDE
+           PATTERN "fusion/*" EXCLUDE
+           PATTERN "phoenix/*" EXCLUDE
+           PATTERN "hana/*" EXCLUDE
+           )
+endif()
 
 # Generate the folly-config.cmake file for installation so that
 # downstream projects that use on folly can easily depend on it in their CMake
@@ -911,7 +993,7 @@ if (BUILD_TESTS)
     )
   endif()
 
-  if (${LIBAIO_FOUND})
+  if (LIBAIO_FOUND)
     folly_define_tests(
       DIRECTORY experimental/io/test/
         TEST async_io_test SOURCES AsyncIOTest.cpp
@@ -931,4 +1013,6 @@ if (BUILD_TESTS)
   endif()
 endif()
 
-add_subdirectory(folly)
+if (NOT FOLLY_POD_CONFIGURATION)
+  add_subdirectory(folly)
+endif()

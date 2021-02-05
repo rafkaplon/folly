@@ -13,6 +13,7 @@ aclocal.m4
 autom4te.cache
 build-aux
 libtool
+build*
 folly/test/gtest
 folly/folly-config.h
 folly/**/test/*_benchmark
