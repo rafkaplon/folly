@@ -5,7 +5,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import specs.fmt as fmt
 import specs.folly as folly
 import specs.sodium as sodium
 
@@ -21,7 +20,7 @@ def fbcode_builder_spec(builder):
         }
     )
     return {
-        'depends_on': [fmt, folly, sodium],
+        'depends_on': [folly, sodium],
         'steps': [
             builder.fb_github_cmake_install(
                 'fizz/fizz/build',

@@ -15,7 +15,6 @@
  */
 
 #include <folly/logging/Logger.h>
-#include <fmt/format.h>
 #include <folly/logging/LogCategory.h>
 #include <folly/logging/LogHandler.h>
 #include <folly/logging/LogMessage.h>
@@ -101,7 +100,7 @@ TEST_F(LoggerTest, formatMessage) {
   EXPECT_EQ(logger_.getCategory(), messages[0].second);
 }
 
-TEST_F(LoggerTest, formatError) {
+TEST_F(LoggerTest, follyFormatError) {
   // If we pass in a bogus format string, logf() should not throw.
   // It should instead log a message, just complaining about the format error.
   FB_LOGF(
@@ -113,7 +112,7 @@ TEST_F(LoggerTest, formatError) {
   // differently on different platforms.
   EXPECT_EQ(
       R"(error formatting log message: )"
-      R"(invalid type specifier; )"
+      R"(invalid format argument {:6.3f}: invalid specifier 'f'; )"
       R"(format string: "param1: {:06d}, param2: {:6.3f}", )"
       R"(arguments: 1234, hello world!)",
       messages[0].first.getMessage());
@@ -147,23 +146,6 @@ class FormattableButNoToString {
   uint32_t value = 0;
 };
 
-namespace fmt {
-template <>
-struct formatter<ToStringFailure> : formatter<std::string> {
-  auto format(ToStringFailure, format_context& ctx) {
-    return ctx.out();
-  }
-};
-
-template <>
-struct formatter<FormattableButNoToString> : formatter<std::string> {
-  auto format(FormattableButNoToString, format_context& ctx) {
-    throw std::runtime_error("test");
-    return ctx.out();
-  }
-};
-} // namespace fmt
-
 // clang-format off
 [[noreturn]] void toAppend(
     const ToStringFailure& /* arg */,
@@ -171,6 +153,30 @@ struct formatter<FormattableButNoToString> : formatter<std::string> {
   throw std::runtime_error(
       "error converting ToStringFailure object to a string");
 }
+
+namespace folly {
+template <>
+class FormatValue<ToStringFailure> {
+ public:
+  explicit FormatValue(ToStringFailure) {}
+
+  template <class FormatCallback>
+  void format(FormatArg& arg, FormatCallback& cb) const {
+    FormatValue<std::string>("ToStringFailure").format(arg, cb);
+  }
+};
+
+template <>
+class FormatValue<FormattableButNoToString> {
+ public:
+  explicit FormatValue(FormattableButNoToString) {}
+
+  template <class FormatCallback>
+  void format(FormatArg&, FormatCallback&) const {
+    throw std::runtime_error("test");
+  }
+};
+} // namespace folly
 // clang-format on
 
 TEST_F(LoggerTest, toStringError) {
@@ -207,7 +213,8 @@ TEST_F(LoggerTest, formatFallbackError) {
   EXPECT_THAT(
       messages[0].first.getMessage(),
       MatchesRegex(
-          R"(error formatting log message: argument index out of range; )"
+          R"(error formatting log message: invalid format argument \{\}: )"
+          R"(argument index out of range, max=2; )"
           R"(format string: "param1: \{\}, param2: \{\}, \{\}", )"
           R"(arguments: 1234, )"
           R"(\[(.*ToStringFailure.*|object) of size (.*):.*\])"));
@@ -344,7 +351,8 @@ TEST_F(LoggerTest, logMacros) {
   FB_LOGF(footest1234, ERR, "whoops: {}, {}", getValue());
   ASSERT_EQ(1, messages.size());
   EXPECT_EQ(
-      R"(error formatting log message: argument index out of range; )"
+      R"(error formatting log message: invalid format argument {}: )"
+      R"(argument index out of range, max=1; )"
       R"(format string: "whoops: {}, {}", arguments: 5)",
       messages[0].first.getMessage());
   messages.clear();
