@@ -15,7 +15,6 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import specs.fmt as fmt
 import specs.gmock as gmock
 from shell_quoting import ShellQuoted
 
