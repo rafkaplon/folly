@@ -121,9 +121,12 @@ class ScopeGuardImpl : public ScopeGuardImplBase {
 
   void execute() noexcept(InvokeNoexcept) {
     if (InvokeNoexcept) {
-      using R = decltype(function_());
-      auto catcher = []() -> R { warnAboutToCrash(), std::terminate(); };
-      catch_exception(function_, catcher);
+      try {
+        function_();
+      } catch (...) {
+        warnAboutToCrash();
+        std::terminate();
+      }
     } else {
       function_();
     }

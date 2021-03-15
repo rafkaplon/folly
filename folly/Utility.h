@@ -210,7 +210,7 @@ constexpr initlist_construct_t initlist_construct{};
 //
 //  mimic: std::sorted_unique_t, std::sorted_unique, p0429r6
 struct sorted_unique_t {};
-constexpr sorted_unique_t sorted_unique;
+constexpr sorted_unique_t sorted_unique{};
 
 //  sorted_equivalent_t, sorted_equivalent
 //
@@ -233,7 +233,7 @@ constexpr sorted_unique_t sorted_unique;
 //
 //  mimic: std::sorted_equivalent_t, std::sorted_equivalent, p0429r6
 struct sorted_equivalent_t {};
-constexpr sorted_equivalent_t sorted_equivalent;
+constexpr sorted_equivalent_t sorted_equivalent{};
 
 template <typename T>
 struct transparent : T {
