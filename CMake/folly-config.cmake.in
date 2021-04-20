@@ -35,7 +35,8 @@ endif()
 set(FOLLY_LIBRARIES Folly::folly)
 
 # Find folly's dependencies
-find_dependency(fmt)
+hunter_add_package(fmt)
+find_dependency(fmt CONFIG REQUIRED)
 
 if (NOT folly_FIND_QUIETLY)
   message(STATUS "Found folly: ${FOLLY_PREFIX_DIR}")
